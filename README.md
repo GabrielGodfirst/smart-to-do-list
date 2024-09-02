@@ -22,29 +22,19 @@ A smart to-do list application that allows users to create tasks with due dates 
 ## Technologies Used
 
 - **Backend:**
-  - Node.js
-  - Express
-  - MongoDB with Mongoose
   - Twilio
   - Google Calendar API
-  - dotenv
-  - cors
-  - node-cron
+  - Mysql
 
 - **Frontend:**
   - HTML
   - CSS
   - JavaScript
-  - React
-  - Axios
-  - React DatePicker
-
+ 
 ## Setup Instructions
 
 ### Prerequisites
 
-- Node.js and npm installed
-- MongoDB database
 - Twilio account
 - Google Cloud Platform project with Calendar API enabled
 
@@ -54,15 +44,6 @@ A smart to-do list application that allows users to create tasks with due dates 
 git clone https://github.com/your-username/smart-todo-list.git
 cd smart-todo-list
 
-  Install Dependencies
-
-npm install
-
-  Environmental Variables
-
-Create a .env file in the root directory and add your configuration variables:
-
-MONGO_URI=your_mongo_db_uri
 TWILIO_ACCOUNT_SID=your_twilio_account_sid
 TWILIO_AUTH_TOKEN=your_twilio_auth_token
 TWILIO_PHONE_NUMBER=your_twilio_phone_number
@@ -71,11 +52,9 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 
  Start the Application
 
-node server.js
-
  Usage
 
-1. Open your browser and navigate to http://localhost:5000.
+1. Open your browser and navigate to http://localhost.
 2. Fill out the form with task details and submit.
 3. The task will be added to the database, and an event will be created in Google Calendar.
 4. An SMS reminder will be sent 24 hours before the task due date.
@@ -95,7 +74,5 @@ To send SMS reminders using Twilio:
 1. Create a Twilio account and obtain your account SID, auth token, and Twilio phone number.
 2. Add these credentials to your .env file in the backend.
 3. Use Twilio's API to send SMS notifications 24 hours before the task due date.
-
-License
 
 ```
