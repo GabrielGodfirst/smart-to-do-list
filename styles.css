@@ -3,9 +3,10 @@ body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Align items at the start of the vertical axis */
     height: 100vh;
     margin: 0;
+    padding-top: 20px; /* Add padding to the top to push content down */
 }
 
 .todo-container {
@@ -13,14 +14,30 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    width: 400px; /* Adjusted width to fit calendar button */
     text-align: center;
+    margin-top: 20px; /* Adjust this value to move the container upwards */
 }
 
 .input-container {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
+}
+
+#calendarBtn {
+    background-color: #4285F4; /* Google Calendar color */
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+#calendarBtn:hover {
+    background-color: #357AE8;
 }
 
 #taskInput {
@@ -57,6 +74,18 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.task-item.completed {
+    background-color: #90ee90; /* Light green for completed tasks */
+}
+
+.task-item.completed .deleteBtn {
+    display: none; /* Hide delete button when task is completed */
+}
+
+.task-item .task-checkbox {
+    margin-right: 10px;
 }
 
 .deleteBtn {
