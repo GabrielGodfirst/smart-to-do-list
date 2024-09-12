@@ -1,70 +1,47 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const calendarBtn = document.getElementById('calendarBtn');
     const taskInput = document.getElementById('taskInput');
+    const taskDate = document.getElementById('taskDate');
     const addTaskBtn = document.getElementById('addTaskBtn');
     const taskList = document.getElementById('taskList');
+    const saveBtn = document.getElementById('saveBtn');
+    const viewBtn = document.getElementById('viewBtn');
 
     // Load tasks from localStorage
     loadTasks();
 
     addTaskBtn.addEventListener('click', addTask);
     taskList.addEventListener('click', handleTaskActions);
-
-    // Load the Google API client library
-    gapi.load('client:auth2', initClient);
-
-    calendarBtn.addEventListener('click', () => {
-        window.open('https://calendar.google.com/', '_blank'); // Opens Google Calendar in a new tab
-    });
-
-    function initClient() {
-        gapi.client.init({
-            apiKey: 'AIzaSyA4dBf3J3OkYzbMfy-GxbZ119lm9twRhr8',
-            clientId: '270408601335-bcr4kkc91b1d0cpmpnt92pi3qrg0o0hp.apps.googleusercontent.com',
-            discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
-            scope: 'https://www.googleapis.com/auth/calendar'
-        }).then(() => {
-            gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-            updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-        });
-    }
-
-    function updateSigninStatus(isSignedIn) {
-        if (isSignedIn) {
-            // User is signed in, you can make API calls here
-        } else {
-            gapi.auth2.getAuthInstance().signIn();
-        }
-    }
+    saveBtn.addEventListener('click', saveCompletedTasks);
+    viewBtn.addEventListener('click', viewTasks);
 
     function addTask() {
         const taskValue = taskInput.value.trim();
-        if (taskValue) {
-            const taskDate = prompt("Enter the task date and time (YYYY-MM-DD):"); // Example: 2024-09-10
+        const taskDateValue = taskDate.value;
+
+        if (taskValue && taskDateValue) {
             const li = document.createElement('li');
             li.className = 'task-item';
             li.innerHTML = `
                 <input type="checkbox" class="task-checkbox">
-                <span>${taskValue}</span>
-                <button class="deleteBtn">Delete</button>
+                <span class="date">${taskDateValue}</span>
+                <span class="task-text">${taskValue}</span>
+                <button class="actionBtn removeBtn">Remove</button>
             `;
 
             taskList.appendChild(li);
-            saveTask(taskValue, false);
-
-            // Create a calendar event if a date is provided
-            if (taskDate) {
-                createCalendarEvent(taskValue, taskDate);
-            }
+            saveTask(taskValue, taskDateValue);
 
             taskInput.value = '';  // Clear the input after adding the task
+            taskDate.value = '';   // Clear the date after adding the task
+        } else {
+            alert('Please enter a task and select a date.');
         }
     }
 
     function handleTaskActions(e) {
         const taskItem = e.target.closest('.task-item');
 
-        if (e.target.classList.contains('deleteBtn')) {
+        if (e.target.classList.contains('removeBtn')) {
             removeTask(taskItem);
         }
 
@@ -73,28 +50,31 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function toggleTaskCompletion(taskItem, isCompleted) {
-        if (isCompleted) {
+    function toggleTaskCompletion(taskItem, isChecked) {
+        if (isChecked) {
             taskItem.classList.add('completed');
-            taskItem.querySelector('.deleteBtn').style.display = 'none';
+            const removeBtn = taskItem.querySelector('.removeBtn');
+            if (removeBtn) {
+                removeBtn.remove(); // Remove the remove button when completed
+            }
         } else {
             taskItem.classList.remove('completed');
-            taskItem.querySelector('.deleteBtn').style.display = 'block';
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'actionBtn removeBtn';
+            removeBtn.textContent = 'Remove';
+            taskItem.appendChild(removeBtn); // Re-add the remove button when unchecked
         }
 
-        updateTask(taskItem.querySelector('span').textContent, isCompleted);
-    }
-
-    function saveTask(task, isCompleted) {
-        const tasks = getTasks();
-        tasks.push({ text: task, completed: isCompleted });
-        localStorage.setItem('tasks', JSON.stringify(tasks));
+        const taskText = taskItem.querySelector('.task-text').textContent;
+        updateTask(taskText, isChecked);
     }
 
     function removeTask(taskItem) {
-        const taskText = taskItem.querySelector('span').textContent;
+        const taskText = taskItem.querySelector('.task-text').textContent;
+        const taskDate = taskItem.querySelector('.date').textContent;
+        const taskDescription = `${taskText} - ${taskDate}`;
         let tasks = getTasks();
-        tasks = tasks.filter(t => t.text !== taskText);
+        tasks = tasks.filter(t => `${t.text} - ${t.date}` !== taskDescription);
         localStorage.setItem('tasks', JSON.stringify(tasks));
         taskItem.remove();
         // If no tasks remain, clear localStorage and ensure UI reflects this
@@ -107,20 +87,80 @@ document.addEventListener('DOMContentLoaded', function () {
         const tasks = getTasks();
         taskList.innerHTML = '';  // Clear existing tasks to avoid duplicates
         tasks.forEach(task => {
-            if (task.text) {  // Ensure task.text is not undefined or null
+            if (task.text && task.date) {  // Ensure task.text and task.date are not undefined or null
                 const li = document.createElement('li');
                 li.className = 'task-item';
-                if (task.completed) {
-                    li.classList.add('completed');
-                }
                 li.innerHTML = `
                     <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}>
-                    <span>${task.text}</span>
-                    <button class="deleteBtn" ${task.completed ? 'style="display:none;"' : ''}>Delete</button>
+                    <span class="date">${task.date}</span>
+                    <span class="task-text">${task.text}</span>
+                    <button class="actionBtn removeBtn">Remove</button>
                 `;
+                if (task.completed) {
+                    li.classList.add('completed');
+                    li.querySelector('.removeBtn').remove(); // Remove remove button for completed tasks
+                }
                 taskList.appendChild(li);
             }
         });
+    }
+
+    function saveCompletedTasks() {
+        const completedTasks = Array.from(document.querySelectorAll('.task-item.completed')).map(taskItem => {
+            const taskTextElem = taskItem.querySelector('.task-text');
+            const taskDateElem = taskItem.querySelector('.date');
+
+            if (taskTextElem && taskDateElem) {
+                return {
+                    task: taskTextElem.textContent,
+                    date: taskDateElem.textContent,
+                    completed: true
+                };
+            } else {
+                console.error('Task elements not found:', taskItem);
+                return null; // Skip this task if elements are missing
+            }
+        }).filter(task => task !== null); // Filter out null values
+
+        if (completedTasks.length > 0) {
+            fetch('http://localhost/smart-to-do-list/save_task.php',  {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(completedTasks),
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log('Tasks saved:', data);
+                //Remove saved tasks from UI
+                completedTasks.forEach(task => {
+                    const taskItems = document.querySelectorAll('.task-item');
+                    taskItems.forEach(taskItem => {
+                        const taskTextElem = taskItem.querySelector('.task-text');
+                        const taskDateElem = taskItem.querySelector('.date');
+
+                        if (taskTextElem && taskDateElem) {
+                            const taskText = taskTextElem.textContent;
+                            const taskDate = taskDateElem.textContent;
+
+                            if (taskText === task.task && taskDate === task.date) {
+                                taskItem.remove();
+                            }
+                        }
+                    });
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        } else {
+            console.log('No tasks to save.');
+        }
+    }
+
+    function saveTask(task, date) {
+        const tasks = getTasks();
+        tasks.push({ text: task, date: date, completed: false });
+        localStorage.setItem('tasks', JSON.stringify(tasks));
     }
 
     function updateTask(taskText, isCompleted) {
@@ -129,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (task) {
             task.completed = isCompleted;
             localStorage.setItem('tasks', JSON.stringify(tasks));
+            // Note: We don't automatically save to the database here
         }
     }
 
@@ -138,24 +179,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return tasks ? tasks : [];
     }
 
-    function createCalendarEvent(task, dateTime) {
-        const event = {
-            'summary': task,
-            'start': {
-                'dateTime': dateTime,
-                'timeZone': 'America/Los_Angeles'
-            },
-            'end': {
-                'dateTime': dateTime,
-                'timeZone': 'America/Los_Angeles'
-            }
-        };
-
-        gapi.client.calendar.events.insert({
-            'calendarId': 'primary',
-            'resource': event
-        }).then(response => {
-            console.log('Event created: ' + response.result.htmlLink);
-        });
+    function viewTasks() {
+        // Open a new page to view tasks
+        window.open('view_tasks.php', '_blank');
     }
 });

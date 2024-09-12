@@ -3,10 +3,10 @@ body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Align items at the start of the vertical axis */
+    align-items: flex-start;
     height: 100vh;
     margin: 0;
-    padding-top: 20px; /* Add padding to the top to push content down */
+    padding-top: 20px;
 }
 
 .todo-container {
@@ -14,9 +14,9 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    width: 400px; /* Adjusted width to fit calendar button */
+    width: 500px;
     text-align: center;
-    margin-top: 20px; /* Adjust this value to move the container upwards */
+    margin-top: 20px;
 }
 
 .input-container {
@@ -26,35 +26,29 @@ body {
     margin-bottom: 20px;
 }
 
-#calendarBtn {
-    background-color: #4285F4; /* Google Calendar color */
-    border: none;
-    padding: 10px;
+#taskDate {
+    width: 100px;
+    padding: 5px;
+    border: 1px solid #ccc;
     border-radius: 5px;
-    color: white;
-    cursor: pointer;
     margin-right: 10px;
 }
 
-#calendarBtn:hover {
-    background-color: #357AE8;
-}
-
 #taskInput {
-    flex: 1;
+    flex: 2;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    margin-right: 10px;
 }
 
 #addTaskBtn {
     background-color: orange;
     border: none;
-    padding: 10px;
+    padding: 5px 10px;
     border-radius: 5px;
     color: white;
     cursor: pointer;
-    margin-left: 10px;
 }
 
 #addTaskBtn:hover {
@@ -64,6 +58,7 @@ body {
 #taskList {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .task-item {
@@ -72,31 +67,63 @@ body {
     border-radius: 5px;
     margin-bottom: 10px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
 }
 
 .task-item.completed {
     background-color: #90ee90; /* Light green for completed tasks */
 }
 
-.task-item.completed .deleteBtn {
-    display: none; /* Hide delete button when task is completed */
-}
-
 .task-item .task-checkbox {
     margin-right: 10px;
 }
 
-.deleteBtn {
-    background-color: red;
+.task-item .date {
+    width: 100px;
+    text-align: left;
+}
+
+.task-item .task-text {
+    flex: 2; /* Center-aligns the task text */
+    text-align: center;
+}
+
+.actionBtn {
     border: none;
-    padding: 5px 10px;
+    padding: 10px 15px;
     border-radius: 5px;
     color: white;
     cursor: pointer;
 }
 
-.deleteBtn:hover {
-    background-color: darkred;
+.removeBtn {
+    background-color: orange; /* Updated remove button color */
+}
+
+.removeBtn:hover {
+    background-color: darkorange;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    gap: 10px; /* Adds spacing between the buttons */
+}
+
+#saveBtn {
+    background-color: green;
+}
+
+#saveBtn:hover {
+    background-color: darkgreen;
+}
+
+#viewBtn {
+    background-color: blue;
+}
+
+#viewBtn:hover {
+    background-color: darkblue;
 }
