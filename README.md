@@ -2,6 +2,10 @@
 
 A smart to-do list application that allows users to create tasks with due dates and phone numbers. The app integrates with Google Calendar to set task start dates and uses Twilio to send reminder SMS notifications to users.
 
+Link to site:  https://gabrielgodfirst.github.io/smart-to-do-list/
+Blog post: https://medium.com/@godfirstgabriel_46402/smart-to-do-list-portfolio-project-a-journey-of-trials-triumphs-and-learning-0a418bcd8952
+Author linkin: www.linkedin.com/in/godfirst-gabriel-nwoko
+
 ## Table of Contents
 
 - [Features](#features)
@@ -14,7 +18,7 @@ A smart to-do list application that allows users to create tasks with due dates 
 
 ## Features
 
-- Create tasks with names, due dates, start dates, and phone numbers.
+- Create tasks with names, due dates.
 - Integrates with Google Calendar to set task start dates.
 - Sends reminder SMS notifications via Twilio 24 hours before the task due date.
 - Simple and responsive frontend interface.
